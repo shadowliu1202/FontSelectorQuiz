@@ -17,16 +17,20 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
 
 import androidx.annotation.WorkerThread;
 import io.reactivex.Observable;
 import io.reactivex.Single;
+import io.reactivex.SingleSource;
+import io.reactivex.functions.Function;
 import okhttp3.ResponseBody;
 
 public class OfflineFirstRepository implements FontRepository {
 
     private final WebFontService webFontService;
     private final File ExternalStoragePath;
+
     public OfflineFirstRepository(Context context) {
         this.webFontService = new GoogleApiClient(context).getWebFontService();
         ExternalStoragePath = context.getExternalFilesDir(null);
@@ -49,17 +53,19 @@ public class OfflineFirstRepository implements FontRepository {
 
     @Override
     public Single<File> getFont(FontFamily family) {
-        return webFontService.downloadWebFont(family.regularFontUrl())
-                .map(responseBody -> writeFileToDisk(responseBody,family));
+        return Single.defer(() -> Single.just(family))
+                .flatMap((Function<FontFamily, SingleSource<File>>) fontFamily -> {
+                    File ttfFile = new File(ExternalStoragePath + File.separator + family.family() + ".ttf");
+                    if (ttfFile.exists()) {
+                        return Single.just(ttfFile);
+                    }
+                    return webFontService.downloadWebFont(family.regularFontUrl()).map(responseBody -> writeFileToDisk(responseBody, ttfFile));
+                });
     }
 
 
     @WorkerThread
-    private File writeFileToDisk(ResponseBody body, FontFamily family) throws IOException {
-        File ttfFile = new File(ExternalStoragePath + File.separator + family.family()+".ttf");
-        if(ttfFile.exists()){
-            return ttfFile;
-        }
+    private File writeFileToDisk(ResponseBody body, File ttfFile) throws IOException {
         InputStream inputStream;
         OutputStream outputStream;
         byte[] fileReader = new byte[4096];
