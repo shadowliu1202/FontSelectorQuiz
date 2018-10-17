@@ -1,12 +1,11 @@
 package com.shadow.fontselectorquiz.domain.repository.cloud;
 
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.concurrent.TimeUnit;
 
+import androidx.annotation.NonNull;
 import okhttp3.Cache;
 import okhttp3.HttpUrl;
 import okhttp3.Interceptor;
@@ -37,7 +36,7 @@ public class GoogleApiClient {
                     interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                     Cache cache = new Cache(new File(context.getCacheDir(), "Cache"), 1024 * 1024 * 100);
                     mOkHttpClient = new OkHttpClient.Builder()
-                            .addInterceptor(interceptor)
+                            //.addInterceptor(interceptor)
                             .addInterceptor(addAPIKey())
                             .cache(cache)
                             .retryOnConnectionFailure(true)

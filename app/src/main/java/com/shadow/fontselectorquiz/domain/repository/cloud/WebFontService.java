@@ -10,5 +10,5 @@ import retrofit2.http.Query;
 
 public interface WebFontService {
     @GET("/webfonts/v1/webfonts")
-    Single<List<WebFontResults>> getGitHubUsers(@Query("since") int since);
+    Single<WebFontResults> getWebFonts();
 }

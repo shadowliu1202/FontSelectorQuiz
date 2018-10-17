@@ -2,6 +2,8 @@
 package com.shadow.fontselectorquiz.domain.repository.bean;
 
 import java.util.List;
+import java.util.Map;
+
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
@@ -30,6 +32,5 @@ public class WebFontBean {
     public String lastModified;
     @SerializedName("files")
     @Expose
-    public Files files;
-
+    public Map<String, String> files;
 }
