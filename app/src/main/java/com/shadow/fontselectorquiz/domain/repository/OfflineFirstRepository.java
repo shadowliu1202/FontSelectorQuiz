@@ -16,8 +16,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.WorkerThread;
 import io.reactivex.Observable;
@@ -50,15 +54,20 @@ public class OfflineFirstRepository implements FontRepository {
         }).map(this::convertToFontFamily).take(1);
     }
 
-    private List<FontFamily> convertToFontFamily(List<WebFontBean> beans) {
+    private List<FontFamily> convertToFontFamily(List<WebFontBean> beans) throws ParseException {
 
         final List<FontFamily> families = new ArrayList<>(beans.size());
         for (WebFontBean item : beans) {
             families.add(FontFamily.builder().setFamily(item.family)
+                    .setLastModified(parseDate(item.lastModified))
                     .setFiles(item.files)
                     .build());
         }
         return families;
+    }
+
+    private Date parseDate(String lastModified) throws ParseException {
+        return new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).parse(lastModified);
     }
 
     @Override

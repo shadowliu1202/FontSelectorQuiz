@@ -2,11 +2,13 @@ package com.shadow.fontselectorquiz.domain.model;
 
 import com.google.auto.value.AutoValue;
 
+import java.util.Date;
 import java.util.Map;
 
 @AutoValue
 public abstract class FontFamily {
     public abstract String family();
+    public abstract Date lastModified();
 
     public abstract Map<String, String> files();
 
@@ -26,6 +28,8 @@ public abstract class FontFamily {
     @AutoValue.Builder
     public abstract static class Builder {
         public abstract FontFamily.Builder setFamily(String name);
+
+        public abstract FontFamily.Builder setLastModified(Date lastModified);
 
         public abstract FontFamily.Builder setFiles(Map<String, String> files);
 
