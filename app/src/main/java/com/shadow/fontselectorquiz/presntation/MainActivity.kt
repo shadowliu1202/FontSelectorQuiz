@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.shadow.fontselectorquiz.R
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity() {
         val adapter = FontFamilyRecyclerViewAdapter(FontFamilyRecyclerViewAdapter.itemSelector {
             font.typeface = it
         }, FontDecorator(repository))
+        recyclerView.addItemDecoration(DividerItemDecoration(this,DividerItemDecoration.VERTICAL))
         recyclerView.adapter = adapter
         repository.fontFamily.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

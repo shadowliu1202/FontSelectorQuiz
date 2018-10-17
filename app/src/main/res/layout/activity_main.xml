@@ -12,6 +12,7 @@
         android:layout_height="0dp"
         android:gravity="center"
         android:text="Hello World!"
+        android:textSize="60sp"
         app:layout_constraintBottom_toTopOf="@+id/rv_fonts"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -20,7 +21,7 @@
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_fonts"
         android:layout_width="0dp"
-        android:layout_height="0dp"
+        android:layout_height="362dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
