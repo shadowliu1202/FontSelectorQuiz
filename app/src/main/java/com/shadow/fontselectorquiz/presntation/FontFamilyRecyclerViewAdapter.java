@@ -1,7 +1,7 @@
 package com.shadow.fontselectorquiz.presntation;
 
+import android.content.Context;
 import android.graphics.Typeface;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,7 +19,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.functions.Consumer;
 
 public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFamilyRecyclerViewAdapter.ViewHolder> {
 
@@ -79,7 +78,7 @@ public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFami
             disposable = decorator.getFontTypeFace(itemView.getContext(), fontFamily)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(font::setTypeface, Throwable::printStackTrace);
-            iv_select.setVisibility(pos == selectPosition?View.VISIBLE:View.INVISIBLE);
+            iv_select.setVisibility(pos == selectPosition ? View.VISIBLE : View.INVISIBLE);
             itemView.setOnClickListener(v -> {
                 int old = selectPosition;
                 selectPosition = pos;

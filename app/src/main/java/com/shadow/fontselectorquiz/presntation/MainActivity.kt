@@ -23,7 +23,8 @@ class MainActivity : AppCompatActivity() {
         val repository = OfflineFirstRepository(this, WebFontDatabase.getDatabase(this))
         val recyclerView = findViewById<RecyclerView>(R.id.rv_fonts)
         val font = findViewById<TextView>(R.id.tv_show)
-        recyclerView.layoutManager = LinearLayoutManager(this)
+        val manager = LinearLayoutManager(this)
+        recyclerView.layoutManager = manager
         recyclerView.setHasFixedSize(true)
         val adapter = FontFamilyRecyclerViewAdapter(FontFamilyRecyclerViewAdapter.itemSelector {
             font.typeface = it
