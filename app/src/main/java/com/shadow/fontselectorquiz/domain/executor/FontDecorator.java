@@ -14,6 +14,7 @@ import androidx.core.provider.FontsContractCompat;
 import io.reactivex.Single;
 import io.reactivex.SingleEmitter;
 import io.reactivex.SingleOnSubscribe;
+import io.reactivex.schedulers.Schedulers;
 
 import static androidx.core.provider.FontsContractCompat.FontRequestCallback.FAIL_REASON_FONT_NOT_FOUND;
 
@@ -30,13 +31,13 @@ public class FontDecorator {
 
     @MainThread
     public Single<Typeface> getFontTypeFace(Context context, FontFamily fontFamily) {
-        return requestFromService(context, fontFamily.family()).
-                onErrorResumeNext(throwable -> retryFromWeb(throwable,fontFamily));
+        return requestFromService(context, fontFamily.family())
+                .onErrorResumeNext(throwable -> retryFromWeb(throwable,fontFamily));
     }
 
     private Single<Typeface> retryFromWeb(Throwable throwable, FontFamily fontFamily) {
         if (throwable instanceof FontNotFoundExcepiton) {
-            return repository.getFont(fontFamily).map(Typeface::createFromFile);
+            return repository.getFont(fontFamily).subscribeOn(Schedulers.io()).map(Typeface::createFromFile);
         }
         return Single.error(throwable);
     }

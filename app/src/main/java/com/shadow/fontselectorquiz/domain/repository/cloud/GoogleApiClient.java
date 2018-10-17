@@ -43,15 +43,12 @@ public class GoogleApiClient {
     }
 
     private Interceptor addAPIKey() {
-        return new Interceptor() {
-            @Override
-            public Response intercept(@NonNull Chain chain) throws IOException {
-                Request original = chain.request();
-                HttpUrl url = original.url().newBuilder()
-                        .addQueryParameter("key", API_KEY)
-                        .build();
-                return chain.proceed(original.newBuilder().url(url).build());
-            }
+        return chain -> {
+            Request original = chain.request();
+            HttpUrl url = original.url().newBuilder()
+                    .addQueryParameter("key", API_KEY)
+                    .build();
+            return chain.proceed(original.newBuilder().url(url).build());
         };
     }
 
