@@ -1,5 +1,6 @@
 package com.shadow.fontselectorquiz.presntation;
 
+import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +17,20 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 
 public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFamilyRecyclerViewAdapter.ViewHolder> {
 
     private final List<FontFamily> families = new ArrayList<>();
-
+    private final itemSelector itemSelector;
     private final FontDecorator decorator;
 
-    public FontFamilyRecyclerViewAdapter(FontDecorator decorator) {
+    public FontFamilyRecyclerViewAdapter(FontFamilyRecyclerViewAdapter.itemSelector itemSelector, FontDecorator decorator) {
+        this.itemSelector = itemSelector;
         this.decorator = decorator;
+    }
+
+    interface itemSelector{
+        void pickFont(Typeface typeface);
     }
 
     public void update(List<FontFamily> fontFamilies){
@@ -67,6 +72,7 @@ public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFami
             disposable = decorator.getFontTypeFace(itemView.getContext(),fontFamily)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(font::setTypeface, Throwable::printStackTrace);
+            itemView.setOnClickListener(v -> itemSelector.pickFont(font.getTypeface()));
         }
     }
 }
