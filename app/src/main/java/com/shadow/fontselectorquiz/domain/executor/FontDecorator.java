@@ -30,7 +30,7 @@ public class FontDecorator {
     }
 
     private Single<Typeface> retryFromWeb(Throwable throwable, FontFamily fontFamily) {
-        if (throwable instanceof FontNotFoundExcepiton) {
+        if (throwable instanceof FontNotFoundException) {
             return repository.getFont(fontFamily).subscribeOn(Schedulers.io()).map(Typeface::createFromFile);
         }
         return Single.error(throwable);
@@ -67,7 +67,7 @@ public class FontDecorator {
 
     private Throwable handleError(int reason) {
         if (reason == FAIL_REASON_FONT_NOT_FOUND) {
-            return new FontNotFoundExcepiton();
+            return new FontNotFoundException();
         }
         return new Exception("Error:" + reason);
     }
