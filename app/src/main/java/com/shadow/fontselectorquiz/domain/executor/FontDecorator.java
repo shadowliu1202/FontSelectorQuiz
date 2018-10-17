@@ -3,8 +3,6 @@ package com.shadow.fontselectorquiz.domain.executor;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Handler;
-import android.os.HandlerThread;
-
 import com.shadow.fontselectorquiz.R;
 import com.shadow.fontselectorquiz.domain.model.FontFamily;
 
@@ -20,13 +18,9 @@ import static androidx.core.provider.FontsContractCompat.FontRequestCallback.FAI
 
 public class FontDecorator {
     private final FontRepository repository;
-    private final Handler handler;
 
     public FontDecorator(FontRepository repository) {
         this.repository = repository;
-        HandlerThread handlerThread = new HandlerThread("fonts");
-        handlerThread.start();
-        handler = new android.os.Handler(handlerThread.getLooper());
     }
 
     @MainThread
@@ -66,7 +60,7 @@ public class FontDecorator {
                             e.onError(handleError(reason));
                         }
                     }
-                }, handler);
+                }, new Handler());
             }
         });
     }

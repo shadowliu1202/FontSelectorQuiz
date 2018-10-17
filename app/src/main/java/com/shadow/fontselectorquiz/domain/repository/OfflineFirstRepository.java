@@ -1,7 +1,6 @@
 package com.shadow.fontselectorquiz.domain.repository;
 
 import android.content.Context;
-import android.util.Log;
 
 import com.shadow.fontselectorquiz.domain.executor.FontRepository;
 import com.shadow.fontselectorquiz.domain.model.FontFamily;
@@ -17,7 +16,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 
 import androidx.annotation.WorkerThread;
 import io.reactivex.Observable;
