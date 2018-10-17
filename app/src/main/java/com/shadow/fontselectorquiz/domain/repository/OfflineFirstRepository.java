@@ -25,7 +25,6 @@ import java.util.Locale;
 
 import androidx.annotation.WorkerThread;
 import io.reactivex.Observable;
-import io.reactivex.ObservableSource;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
 import io.reactivex.functions.Function;
