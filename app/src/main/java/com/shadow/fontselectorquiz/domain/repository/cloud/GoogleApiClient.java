@@ -12,7 +12,6 @@ import okhttp3.Interceptor;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.Response;
-import okhttp3.logging.HttpLoggingInterceptor;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -32,11 +31,8 @@ public class GoogleApiClient {
         if (mOkHttpClient == null) {
             synchronized (GoogleApiClient.class) {
                 if (mOkHttpClient == null) {
-                    HttpLoggingInterceptor interceptor = new HttpLoggingInterceptor();
-                    interceptor.setLevel(HttpLoggingInterceptor.Level.BODY);
                     Cache cache = new Cache(new File(context.getCacheDir(), "Cache"), 1024 * 1024 * 100);
                     mOkHttpClient = new OkHttpClient.Builder()
-                            //.addInterceptor(interceptor)
                             .addInterceptor(addAPIKey())
                             .cache(cache)
                             .retryOnConnectionFailure(true)
