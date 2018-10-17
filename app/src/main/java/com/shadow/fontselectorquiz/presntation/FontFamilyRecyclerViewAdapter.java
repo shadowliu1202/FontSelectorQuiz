@@ -1,6 +1,5 @@
 package com.shadow.fontselectorquiz.presntation;
 
-import android.content.Context;
 import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +12,7 @@ import com.shadow.fontselectorquiz.domain.executor.FontDecorator;
 import com.shadow.fontselectorquiz.domain.model.FontFamily;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -26,6 +26,7 @@ public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFami
     private final itemSelector itemSelector;
     private final FontDecorator decorator;
     private int selectPosition = -1;
+    private String selectFamily = "";
 
     public FontFamilyRecyclerViewAdapter(FontFamilyRecyclerViewAdapter.itemSelector itemSelector, FontDecorator decorator) {
         this.itemSelector = itemSelector;
@@ -54,6 +55,16 @@ public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFami
         viewHolder.bind(families.get(position), decorator, position);
     }
 
+    public void orderByFamily(){
+        Collections.sort(families, (o1, o2) -> o1.family().compareTo(o2.family()));
+        notifyDataSetChanged();
+    }
+
+    public void orderByLastModified(){
+        Collections.sort(families, (o1, o2) -> o1.lastModified().compareTo(o2.lastModified()));
+        notifyDataSetChanged();
+    }
+
     @Override
     public int getItemCount() {
         return families.size();
@@ -78,8 +89,13 @@ public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFami
             disposable = decorator.getFontTypeFace(itemView.getContext(), fontFamily)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(font::setTypeface, Throwable::printStackTrace);
-            iv_select.setVisibility(pos == selectPosition ? View.VISIBLE : View.INVISIBLE);
+            boolean isSelected = fontFamily.family().equals(selectFamily);
+            if(isSelected){
+                selectPosition = pos;
+            }
+            iv_select.setVisibility(isSelected? View.VISIBLE : View.INVISIBLE);
             itemView.setOnClickListener(v -> {
+                selectFamily = fontFamily.family();
                 int old = selectPosition;
                 selectPosition = pos;
                 notifyItemChanged(old);
