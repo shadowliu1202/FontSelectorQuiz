@@ -4,6 +4,7 @@ import android.graphics.Typeface;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.shadow.fontselectorquiz.R;
@@ -23,17 +24,18 @@ public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFami
     private final List<FontFamily> families = new ArrayList<>();
     private final itemSelector itemSelector;
     private final FontDecorator decorator;
+    private int selectPosition = -1;
 
     public FontFamilyRecyclerViewAdapter(FontFamilyRecyclerViewAdapter.itemSelector itemSelector, FontDecorator decorator) {
         this.itemSelector = itemSelector;
         this.decorator = decorator;
     }
 
-    interface itemSelector{
+    interface itemSelector {
         void pickFont(Typeface typeface);
     }
 
-    public void update(List<FontFamily> fontFamilies){
+    public void update(List<FontFamily> fontFamilies) {
         families.clear();
         families.addAll(fontFamilies);
         notifyDataSetChanged();
@@ -48,7 +50,7 @@ public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFami
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-        viewHolder.bind(families.get(position),decorator);
+        viewHolder.bind(families.get(position), decorator, position);
     }
 
     @Override
@@ -58,21 +60,31 @@ public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFami
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView font;
+        private final ImageView iv_select;
         private Disposable disposable;
+
         ViewHolder(View view) {
             super(view);
             font = view.findViewById(R.id.tv_font);
+            iv_select = view.findViewById(R.id.iv_select);
         }
 
-        void bind(FontFamily fontFamily, FontDecorator decorator) {
+        void bind(FontFamily fontFamily, FontDecorator decorator, int pos) {
             font.setText(fontFamily.family());
-            if(disposable != null && !disposable.isDisposed()){
+            if (disposable != null && !disposable.isDisposed()) {
                 disposable.dispose();
             }
-            disposable = decorator.getFontTypeFace(itemView.getContext(),fontFamily)
+            disposable = decorator.getFontTypeFace(itemView.getContext(), fontFamily)
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe(font::setTypeface, Throwable::printStackTrace);
-            itemView.setOnClickListener(v -> itemSelector.pickFont(font.getTypeface()));
+            iv_select.setVisibility(pos == selectPosition?View.VISIBLE:View.INVISIBLE);
+            itemView.setOnClickListener(v -> {
+                int old = selectPosition;
+                selectPosition = pos;
+                notifyItemChanged(old);
+                notifyItemChanged(pos);
+                itemSelector.pickFont(font.getTypeface());
+            });
         }
     }
 }

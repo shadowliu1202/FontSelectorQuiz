@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
         val recyclerView = findViewById<RecyclerView>(R.id.rv_fonts)
         val font = findViewById<TextView>(R.id.tv_show)
         recyclerView.layoutManager = LinearLayoutManager(this)
+        recyclerView.setHasFixedSize(true)
         val adapter = FontFamilyRecyclerViewAdapter(FontFamilyRecyclerViewAdapter.itemSelector {
             font.typeface = it
         }, FontDecorator(repository))
