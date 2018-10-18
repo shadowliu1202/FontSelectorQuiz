@@ -17,6 +17,7 @@ import com.shadow.fontselectorquiz.domain.repository.OfflineFirstRepository
 import com.shadow.fontselectorquiz.domain.repository.db.WebFontDatabase
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
+import io.reactivex.subjects.PublishSubject
 
 class MainActivity : AppCompatActivity() {
 
@@ -27,31 +28,29 @@ class MainActivity : AppCompatActivity() {
         val repository = OfflineFirstRepository(this, WebFontDatabase.getDatabase(this))
         val recyclerView = findViewById<RecyclerView>(R.id.rv_fonts)
         val font = findViewById<TextView>(R.id.tv_show)
-        val orderBy = findViewById<Spinner>(R.id.spinner)
+        val spinner = findViewById<Spinner>(R.id.spinner)
         val manager = LinearLayoutManager(this)
+        val order = PublishSubject.create<Number>()
         recyclerView.layoutManager = manager
         recyclerView.setHasFixedSize(true)
         val adapter = FontFamilyRecyclerViewAdapter(FontFamilyRecyclerViewAdapter.itemSelector {
             font.typeface = it
         }, FontDecorator(repository))
-//        orderBy.onItemSelectedListener = object : OnItemSelectedListener {
-//            override fun onNothingSelected(parent: AdapterView<*>?) {
-//                adapter.orderByFamily()
-//            }
-//
-//            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-//                if (position == 0){
-//                    adapter.orderByFamily()
-//                }else{
-//                    adapter.orderByLastModified()
-//                }
-//            }
-//        }
+        spinner.onItemSelectedListener = object : OnItemSelectedListener {
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+            }
+
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                order.onNext(position)
+            }
+        }
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         recyclerView.adapter = adapter
-        repository.fontFamilyList.subscribeOn(Schedulers.io())
+
+        order.flatMap { orderBy -> repository.getFontFamilyList(orderBy as Int) }
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { fonts -> adapter.submitList(fonts) }
+                .subscribe(adapter::submitList)
     }
 
 }

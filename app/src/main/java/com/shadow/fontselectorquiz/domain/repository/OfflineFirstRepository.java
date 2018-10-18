@@ -26,11 +26,10 @@ import java.util.Locale;
 import androidx.annotation.WorkerThread;
 import androidx.paging.PagedList;
 import androidx.paging.RxPagedListBuilder;
-import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
-import io.reactivex.functions.Consumer;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
@@ -40,23 +39,34 @@ public class OfflineFirstRepository implements FontRepository {
     private final WebFontService webFontService;
     private final WebFontDao dao;
     private final File ExternalStoragePath;
-
+    @SuppressLint("CheckResult")
     public OfflineFirstRepository(Context context, WebFontDatabase database) {
         this.webFontService = new GoogleApiClient(context).getWebFontService();
         ExternalStoragePath = context.getExternalFilesDir(null);
         this.dao = database.webFontDao();
-    }
-
-    @SuppressLint("CheckResult")
-    @Override
-    public Observable<PagedList<FontFamily>> getFontFamilyList() {
         webFontService.getWebFonts().map(result -> result.items)
                 .subscribeOn(Schedulers.io())
                 .subscribe(dao::setWebFonts, Throwable::printStackTrace);
-        return new RxPagedListBuilder<>(
-                dao.getWebFontsSource().map(this::convertToFontFamily), 20)
-                .buildObservable();
     }
+    @Override
+    public Observable<PagedList<FontFamily>> getFontFamilyList(int orderBy) {
+        return getOrderPagedList(orderBy);
+    }
+
+    private Observable<PagedList<FontFamily>> getOrderPagedList(int orderBy) {
+        switch (orderBy) {
+            case 0:
+            default:
+                return new RxPagedListBuilder<>(
+                        dao.getWebFontsSourceOrderByFamily().map(this::convertToFontFamily), 20)
+                        .buildObservable();
+            case 1:
+                return new RxPagedListBuilder<>(
+                        dao.getWebFontsSourceOrderByLastModified().map(this::convertToFontFamily), 20)
+                        .buildObservable();
+        }
+    }
+
 
     @SuppressLint("CheckResult")
     @Override

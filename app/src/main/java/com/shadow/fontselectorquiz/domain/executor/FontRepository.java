@@ -10,7 +10,7 @@ import io.reactivex.Observable;
 import io.reactivex.Single;
 
 public interface FontRepository {
-    Observable<PagedList<FontFamily>> getFontFamilyList();
+    Observable<PagedList<FontFamily>> getFontFamilyList(int orderBy);
     Observable<List<FontFamily>> getFontFamily();
     Single<File> getFont(FontFamily family);
 }

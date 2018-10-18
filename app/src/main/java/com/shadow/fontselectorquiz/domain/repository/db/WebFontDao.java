@@ -19,7 +19,10 @@ public interface WebFontDao {
     Observable<List<WebFontBean>> getWebFonts();
 
     @Query("SELECT * from WebFontBean  ORDER BY family ASC")
-    DataSource.Factory<Integer, WebFontBean> getWebFontsSource();
+    DataSource.Factory<Integer, WebFontBean> getWebFontsSourceOrderByFamily();
+
+    @Query("SELECT * from WebFontBean  ORDER BY lastModified ASC")
+    DataSource.Factory<Integer, WebFontBean> getWebFontsSourceOrderByLastModified();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void setWebFonts(List<WebFontBean> gitHubUserBeans);

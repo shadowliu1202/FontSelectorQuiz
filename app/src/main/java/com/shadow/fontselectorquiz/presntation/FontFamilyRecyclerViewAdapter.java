@@ -54,7 +54,9 @@ public class FontFamilyRecyclerViewAdapter extends PagedListAdapter<FontFamily,F
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-        viewHolder.bind(getItem(position), decorator, position);
+        if(getItem(position) != null){
+            viewHolder.bind(getItem(position), decorator, position);
+        }
     }
 
 //    public void orderByFamily(){
