@@ -70,4 +70,14 @@ dependencies {
     implementation "androidx.room:room-rxjava2:$room_version"
     // Test helpers
     testImplementation "androidx.room:room-testing:$room_version"
+
+    def paging_version = "2.1.0-alpha01"
+
+    implementation "androidx.paging:paging-runtime:$paging_version" // use -ktx for Kotlin
+
+    // alternatively - without Android dependencies for testing
+    testImplementation "androidx.paging:paging-common:$paging_version" // use -ktx for Kotlin
+
+    // optional - RxJava support
+    implementation "androidx.paging:paging-rxjava2:$paging_version" // use -ktx for Kotlin
 }

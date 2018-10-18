@@ -24,10 +24,15 @@ import java.util.List;
 import java.util.Locale;
 
 import androidx.annotation.WorkerThread;
+import androidx.paging.PagedList;
+import androidx.paging.RxPagedListBuilder;
+import io.reactivex.BackpressureStrategy;
 import io.reactivex.Observable;
 import io.reactivex.Single;
 import io.reactivex.SingleSource;
+import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 import okhttp3.ResponseBody;
 
 public class OfflineFirstRepository implements FontRepository {
@@ -44,29 +49,50 @@ public class OfflineFirstRepository implements FontRepository {
 
     @SuppressLint("CheckResult")
     @Override
+    public Observable<PagedList<FontFamily>> getFontFamilyList() {
+        webFontService.getWebFonts().map(result -> result.items)
+                .subscribeOn(Schedulers.io())
+                .subscribe(dao::setWebFonts, Throwable::printStackTrace);
+        return new RxPagedListBuilder<>(
+                dao.getWebFontsSource().map(this::convertToFontFamily), 20)
+                .buildObservable();
+    }
+
+    @SuppressLint("CheckResult")
+    @Override
     public Observable<List<FontFamily>> getFontFamily() {
         return dao.getWebFonts().flatMap(webFontBeans -> {
-            if(webFontBeans.size() == 0){
-                return webFontService.getWebFonts().map(result->result.items).doOnSuccess(dao::setWebFonts).toObservable();
+            if (webFontBeans.size() == 0) {
+                return webFontService.getWebFonts().map(result -> result.items).doOnSuccess(dao::setWebFonts).toObservable();
             }
             return Observable.just(webFontBeans);
         }).map(this::convertToFontFamily).take(1);
     }
 
-    private List<FontFamily> convertToFontFamily(List<WebFontBean> beans) throws ParseException {
+    private FontFamily convertToFontFamily(WebFontBean item) {
+        Date date;
+        try {
+            date = parseDate(item.lastModified);
+        } catch (ParseException e) {
+            date = new Date();
+        }
+        return FontFamily.builder().setFamily(item.family)
+                .setLastModified(date)
+                .setFiles(item.files)
+                .build();
+    }
+
+    private List<FontFamily> convertToFontFamily(List<WebFontBean> beans) {
 
         final List<FontFamily> families = new ArrayList<>(beans.size());
         for (WebFontBean item : beans) {
-            families.add(FontFamily.builder().setFamily(item.family)
-                    .setLastModified(parseDate(item.lastModified))
-                    .setFiles(item.files)
-                    .build());
+            families.add(convertToFontFamily(item));
         }
         return families;
     }
 
     private Date parseDate(String lastModified) throws ParseException {
-        return new SimpleDateFormat("yyyy-MM-dd",Locale.getDefault()).parse(lastModified);
+        return new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).parse(lastModified);
     }
 
     @Override
