@@ -11,36 +11,38 @@ import com.shadow.fontselectorquiz.R;
 import com.shadow.fontselectorquiz.domain.executor.FontDecorator;
 import com.shadow.fontselectorquiz.domain.model.FontFamily;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import androidx.annotation.NonNull;
+import androidx.paging.PagedListAdapter;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.RecyclerView;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.disposables.Disposable;
 
-public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFamilyRecyclerViewAdapter.ViewHolder> {
+public class FontFamilyRecyclerViewAdapter extends PagedListAdapter<FontFamily,FontFamilyRecyclerViewAdapter.ViewHolder> {
 
-    private final List<FontFamily> families = new ArrayList<>();
     private final itemSelector itemSelector;
     private final FontDecorator decorator;
     private int selectPosition = -1;
     private String selectFamily = "";
 
     public FontFamilyRecyclerViewAdapter(FontFamilyRecyclerViewAdapter.itemSelector itemSelector, FontDecorator decorator) {
+        super(new DiffUtil.ItemCallback<FontFamily>() {
+            @Override
+            public boolean areItemsTheSame(@NonNull FontFamily oldItem, @NonNull FontFamily newItem) {
+                return oldItem.equals(newItem);
+            }
+
+            @Override
+            public boolean areContentsTheSame(@NonNull FontFamily oldItem, @NonNull FontFamily newItem) {
+                return oldItem.equals(newItem);
+            }
+        });
         this.itemSelector = itemSelector;
         this.decorator = decorator;
     }
 
     interface itemSelector {
         void pickFont(Typeface typeface);
-    }
-
-    public void update(List<FontFamily> fontFamilies) {
-        families.clear();
-        families.addAll(fontFamilies);
-        notifyDataSetChanged();
     }
 
     @NonNull
@@ -52,23 +54,18 @@ public class FontFamilyRecyclerViewAdapter extends RecyclerView.Adapter<FontFami
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int position) {
-        viewHolder.bind(families.get(position), decorator, position);
+        viewHolder.bind(getItem(position), decorator, position);
     }
 
-    public void orderByFamily(){
-        Collections.sort(families, (o1, o2) -> o1.family().compareTo(o2.family()));
-        notifyDataSetChanged();
-    }
-
-    public void orderByLastModified(){
-        Collections.sort(families, (o1, o2) -> o1.lastModified().compareTo(o2.lastModified()));
-        notifyDataSetChanged();
-    }
-
-    @Override
-    public int getItemCount() {
-        return families.size();
-    }
+//    public void orderByFamily(){
+//        Collections.sort(families, (o1, o2) -> o1.family().compareTo(o2.family()));
+//        notifyDataSetChanged();
+//    }
+//
+//    public void orderByLastModified(){
+//        Collections.sort(families, (o1, o2) -> o1.lastModified().compareTo(o2.lastModified()));
+//        notifyDataSetChanged();
+//    }
 
     class ViewHolder extends RecyclerView.ViewHolder {
         private final TextView font;

@@ -18,7 +18,7 @@ public interface WebFontDao {
     @Query("SELECT * from WebFontBean")
     Observable<List<WebFontBean>> getWebFonts();
 
-    @Query("SELECT * from WebFontBean  ORDER BY family DESC")
+    @Query("SELECT * from WebFontBean  ORDER BY family ASC")
     DataSource.Factory<Integer, WebFontBean> getWebFontsSource();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

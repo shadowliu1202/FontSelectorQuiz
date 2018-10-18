@@ -5,6 +5,8 @@ import com.google.auto.value.AutoValue;
 import java.util.Date;
 import java.util.Map;
 
+import androidx.annotation.Nullable;
+
 @AutoValue
 public abstract class FontFamily {
     public abstract String family();
@@ -34,5 +36,13 @@ public abstract class FontFamily {
         public abstract FontFamily.Builder setFiles(Map<String, String> files);
 
         public abstract FontFamily build();
+    }
+
+    @Override
+    public boolean equals(@Nullable Object obj) {
+        if(obj instanceof FontFamily){
+            return family().equals(((FontFamily) obj).family());
+        }
+        return false;
     }
 }

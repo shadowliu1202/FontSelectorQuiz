@@ -34,24 +34,24 @@ class MainActivity : AppCompatActivity() {
         val adapter = FontFamilyRecyclerViewAdapter(FontFamilyRecyclerViewAdapter.itemSelector {
             font.typeface = it
         }, FontDecorator(repository))
-        orderBy.onItemSelectedListener = object : OnItemSelectedListener {
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-                adapter.orderByFamily()
-            }
-
-            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                if (position == 0){
-                    adapter.orderByFamily()
-                }else{
-                    adapter.orderByLastModified()
-                }
-            }
-        }
+//        orderBy.onItemSelectedListener = object : OnItemSelectedListener {
+//            override fun onNothingSelected(parent: AdapterView<*>?) {
+//                adapter.orderByFamily()
+//            }
+//
+//            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+//                if (position == 0){
+//                    adapter.orderByFamily()
+//                }else{
+//                    adapter.orderByLastModified()
+//                }
+//            }
+//        }
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         recyclerView.adapter = adapter
-        repository.fontFamily.subscribeOn(Schedulers.io())
+        repository.fontFamilyList.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe { fonts -> adapter.update(fonts) }
+                .subscribe { fonts -> adapter.submitList(fonts) }
     }
 
 }
