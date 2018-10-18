@@ -16,12 +16,14 @@ import com.shadow.fontselectorquiz.domain.executor.FontDecorator
 import com.shadow.fontselectorquiz.domain.repository.OfflineFirstRepository
 import com.shadow.fontselectorquiz.domain.repository.db.WebFontDatabase
 import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
 
 class MainActivity : AppCompatActivity() {
 
-    @SuppressLint("CheckResult")
+    lateinit var dispose:Disposable
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -47,10 +49,14 @@ class MainActivity : AppCompatActivity() {
         recyclerView.addItemDecoration(DividerItemDecoration(this, DividerItemDecoration.VERTICAL))
         recyclerView.adapter = adapter
 
-        order.flatMap { orderBy -> repository.getFontFamilyList(orderBy as Int) }
+        dispose =order.flatMap { orderBy -> repository.getFontFamilyList(orderBy as Int) }
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(adapter::submitList)
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        dispose.dispose()
+    }
 }
