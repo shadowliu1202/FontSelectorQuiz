@@ -1,6 +1,5 @@
 package com.shadow.fontselectorquiz.presntation
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
@@ -13,6 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.shadow.fontselectorquiz.R
 import com.shadow.fontselectorquiz.domain.executor.FontDecorator
+import com.shadow.fontselectorquiz.domain.executor.FontTypeFetcher
 import com.shadow.fontselectorquiz.domain.repository.OfflineFirstRepository
 import com.shadow.fontselectorquiz.domain.repository.db.WebFontDatabase
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         recyclerView.setHasFixedSize(true)
         val adapter = FontFamilyRecyclerViewAdapter(FontFamilyRecyclerViewAdapter.itemSelector {
             font.typeface = it
-        }, FontDecorator(repository))
+        }, FontDecorator(FontTypeFetcher.getInstance(repository)))
         spinner.onItemSelectedListener = object : OnItemSelectedListener {
             override fun onNothingSelected(parent: AdapterView<*>?) {
             }
